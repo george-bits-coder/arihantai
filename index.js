@@ -319,6 +319,21 @@ app.post('/fortale', async(req,res)=>{
 }
 })
 
+ app.post('/mind785', async(req,res)=>{
+
+  console.log(req.body,"request hello")
+    const {message,pq,pa}=req.body;
+    console.log("message inside api is",message)
+    // res.json({message:message})
+   let company="mind";
+   const response=await customGenerateCompletionwithContext(message,company,pq,pa);
+
+  console.log(response,"is response")
+
+  if(response){
+      res.json({message:response})
+}
+})
 
  
 
