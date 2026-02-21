@@ -329,9 +329,9 @@ app.post('/fortale', async(req,res)=>{
    const response=await customGenerateCompletionwithContext(message,company,pq,pa);
 
   console.log(response,"is response")
-
+const context = await minddetails(message);
   if(response){
-      res.json({message:response})
+      res.json({message:response,parameters:context})
 }
 })
 
