@@ -370,8 +370,8 @@ app.post('/send-session-email', async (req, res) => {
 
     // Email options
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'your-email@gmail.com',
-      to: 'info@mindoragroup.com',
+      from: process.env.EMAIL_USER || 'consultmindora@gmail.com',
+      to: 'hellorblend@gmail.com',
       subject: 'Mindora AI Chat Session Ended',
       text: sessionContent
     };
