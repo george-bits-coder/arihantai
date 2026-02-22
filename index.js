@@ -1,6 +1,7 @@
 const express = require('express');
 const { customGenerateCompletionwithContext,intentcompletion,goetheResponse,ennegramResponse} =require('./completion');
 const cors = require('cors');
+const nodemailer = require('nodemailer');
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(cors()); // Add this line
