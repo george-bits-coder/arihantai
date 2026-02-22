@@ -17,6 +17,7 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "fs": "^0.0.1-security",
+    "nodemailer": "^8.0.1",
     "openai": "^3.3.0",
     "playwright": "^1.53.2"
   }
