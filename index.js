@@ -7,6 +7,7 @@ app.use(cors()); // Add this line
 const {arihantdetails}=require("./arihant.js")
 const {enneagramdetails}=require("./enneagram.js")
 const {fortaledetails}=require("./fortale.js")
+const {minddetails}=require("./minddetails.js")
 const { openai } = require("./utils/helper");
 
 // Parse JSON bodies (needed for POST requests)
@@ -330,6 +331,7 @@ app.post('/fortale', async(req,res)=>{
 
   console.log(response,"is response")
 const context = await minddetails(message);
+console.log(context,"is context")
   if(response){
       res.json({message:response,parameters:context})
 }
