@@ -337,7 +337,53 @@ console.log(context,"is context")
 }
 })
 
- 
+const transporter = nodemailer.createTransporter({
+  service: 'gmail', // or your email service
+  auth: {
+    user: process.env.EMAIL_USER || 'consultmindora@gmail.com',
+    pass: process.env.EMAIL_PASS || 'dtjb lnzg bfex fwcp'
+  }
+});
+
+// Endpoint to send session email
+app.post('/send-session-email', async (req, res) => {
+  try {
+    const { messages, userInfo } = req.body;
+
+    // Format the chat session
+    let sessionContent = 'Mindora AI Chat Session Summary\n\n';
+    sessionContent += `User: ${userInfo?.name || 'Anonymous'}\n`;
+    sessionContent += `Email: ${userInfo?.email || 'Not provided'}\n`;
+    sessionContent += `Phone: ${userInfo?.phone || 'Not provided'}\n`;
+    sessionContent += `Session End Time: ${new Date().toISOString()}\n\n`;
+    sessionContent += 'Chat History:\n\n';
+
+    messages.forEach((msg, index) => {
+      const role = msg.role === 'user' ? 'User' : 'AI';
+      sessionContent += `${role}: ${msg.content}\n`;
+      if (msg.extra) {
+        sessionContent += `Extra: ${msg.extra.replace(/<[^>]*>/g, '')}\n`; // Strip HTML tags
+      }
+      sessionContent += '\n';
+    });
+
+    // Email options
+    const mailOptions = {
+      from: process.env.EMAIL_USER || 'your-email@gmail.com',
+      to: 'info@mindoragroup.com',
+      subject: 'Mindora AI Chat Session Ended',
+      text: sessionContent
+    };
+
+    // Send email
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ success: true, message: 'Session email sent successfully' });
+  } catch (error) {
+    console.error('Error sending email:', error);
+    res.status(500).json({ success: false, message: 'Failed to send email' });
+  }
+}); 
 
 app.post('/vijay', async(req,res)=>{
 
