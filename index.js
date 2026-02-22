@@ -338,7 +338,7 @@ console.log(context,"is context")
 }
 })
 
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
   service: 'gmail', // or your email service
   auth: {
     user: process.env.EMAIL_USER || 'consultmindora@gmail.com',
