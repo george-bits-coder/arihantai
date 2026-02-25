@@ -338,7 +338,7 @@ console.log(context,"is context")
 }
 })
 
-const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransporter({
   service: 'gmail', // or your email service
   auth: {
     user: process.env.EMAIL_USER || 'consultmindora@gmail.com',
@@ -346,10 +346,21 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// Verify transporter
+transporter.verify((error, success) => {
+  if (error) {
+    console.log('Transporter verification failed:', error);
+  } else {
+    console.log('Transporter is ready to send emails');
+  }
+});
+
 // Endpoint to send session email
 app.post('/send-session-email', async (req, res) => {
+  console.log('Received request to send session email');
   try {
     const { messages, userInfo } = req.body;
+    console.log('Request body:', { messages: messages ? messages.length : 0, userInfo });
 
     // Format the chat session
     let sessionContent = 'Mindora AI Chat Session Summary\n\n';
@@ -376,8 +387,10 @@ app.post('/send-session-email', async (req, res) => {
       text: sessionContent
     };
 
+    console.log('Sending email...');
     // Send email
     await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully');
 
     res.status(200).json({ success: true, message: 'Session email sent successfully' });
   } catch (error) {

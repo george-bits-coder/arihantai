@@ -35,12 +35,12 @@ const OPENAI_API_KEY = process.env.apikey5; // Replace with your actual key
 
 async function minddetails(discussion) {
 
-const printdetails=({is_human,is_booking})=>{
+const printdetails=({is_human,is_booking,is_offer,is_intro})=>{
  
   console.log(is_human);
   console.log(is_booking);
   
-  return {is_human,is_booking}
+  return {is_human,is_booking,is_offer,is_intro}
   }
   try {
       const response = await openai.createChatCompletion({
@@ -61,11 +61,18 @@ const printdetails=({is_human,is_booking})=>{
                     "enum": [true, false],
                     "description": "indicates whether the user is asking specifically to talk to a human. Meaning instead of ai chat user wants to talk to an actual human. This is false if user is asking to book a room"
                 },
-                 is_booking: {
+                 is_offer: {
                     "type": "boolean",
                     "enum": [true, false],
-                    "description": "indicates whether the user is asking specifically to book a meeting "
-                  }
+                    "description": "indicates whether the user is asking specifically to get offer "
+                  },
+                    is_intro: {
+                    "type": "boolean",
+                    "enum": [true, false],
+                    "description": "indicates whether the user is asking specifically to get an idea/ overview or intro about mindora "
+                  },
+
+
                 
                 },
                 
