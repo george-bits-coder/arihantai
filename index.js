@@ -331,14 +331,14 @@ app.post('/fortale', async(req,res)=>{
    const response=await customGenerateCompletionwithContext(message,company,pq,pa);
 
   console.log(response,"is response")
-const context = await minddetails(message);
+const context = await minddetails("question "+pa+" answer "+message);
 console.log(context,"is context")
   if(response){
       res.json({message:response,parameters:context})
 }
 })
 
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
   service: 'gmail', // or your email service
   auth: {
     user: process.env.EMAIL_USER || 'consultmindora@gmail.com',
@@ -359,6 +359,8 @@ transporter.verify((error, success) => {
 app.post('/send-session-email', async (req, res) => {
   console.log('Received request to send session email');
   try {
+
+    console.log("inside session email api")
     const { messages, userInfo } = req.body;
     console.log('Request body:', { messages: messages ? messages.length : 0, userInfo });
 
