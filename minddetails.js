@@ -76,7 +76,7 @@ const printdetails=({is_human,is_booking,is_offer,is_intro})=>{
                 
                 },
                 
-              required:["is_human","is_booking"]
+              required:["is_human","is_booking","is_offer","is_intro"]
              
             }
                
@@ -96,7 +96,7 @@ console.log(reply)
           return ans;
         }
      }
-     else return {is_human:false,is_booking:false};
+     else return {is_human:false,is_booking:false,is_offer:false,is_intro:false};
   } catch (error) {
       console.error("Error extracting mind details:", error.response.data);
       return {is_human:false,is_booking:false};;
