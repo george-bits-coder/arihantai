@@ -61,6 +61,11 @@ const printdetails=({is_human,is_booking,is_offer,is_intro})=>{
                     "enum": [true, false],
                     "description": "indicates whether the user is asking specifically to talk to a human. Meaning instead of ai chat user wants to talk to an actual human. This is false if user is asking to book a room"
                 },
+                  is_booking: {
+                    "type": "boolean",
+                    "enum": [true, false],
+                    "description": "indicates whether the user is asking specifically to get an idea/ overview or intro about mindora "
+                  },
                  is_offer: {
                     "type": "boolean",
                     "enum": [true, false],
