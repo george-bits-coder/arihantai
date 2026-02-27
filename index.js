@@ -321,10 +321,57 @@ app.post('/fortale', async(req,res)=>{
 }
 })
 
- app.post('/mind785', async(req,res)=>{
+ // In-memory store for sessions keyed by name+email+phone
+// Each entry: { userInfo: {name,email,phone}, messages: [{user,ai}], timer: Timeout }
+const sessionStore = {};
+
+// helper to compose and send email for a session key
+const { sendMail } = require('./sendemail');
+
+async function emailSession(key) {
+  const session = sessionStore[key];
+  if (!session) return;
+  const { name, email, phone } = session.userInfo || {};
+  // build email body
+  let sessionContent = 'Mindora AI Chat Session Summary\n\n';
+  sessionContent += `User: ${name || 'Anonymous'}\n`;
+  sessionContent += `Email: ${email || 'Not provided'}\n`;
+  sessionContent += `Phone: ${phone || 'Not provided'}\n`;
+  sessionContent += `Session End Time: ${new Date().toISOString()}\n\n`;
+  sessionContent += 'Chat History:\n\n';
+  session.messages.forEach((msg) => {
+    sessionContent += `User: ${msg.user}\nAI: ${msg.ai}\n\n`;
+  });
+
+  try {
+    await sendMail({
+      from: process.env.EMAIL_USER || 'consultmindora@gmail.com',
+      to: 'hellorblend@gmail.com',
+      subject: 'Mindora AI Chat Session Ended',
+      text: sessionContent
+    });
+    console.log('Session email sent for', key);
+  } catch (err) {
+    console.error('Failed to send session email for', key, err);
+  }
+  // cleanup
+  clearTimeout(session.timer);
+  delete sessionStore[key];
+}
+
+// schedule email if not already scheduled
+function scheduleEmailForSession(key) {
+  const session = sessionStore[key];
+  if (!session || session.timer) return;
+  session.timer = setTimeout(() => {
+    emailSession(key);
+  }, 5 * 60 * 1000); // 5 minutes
+}
+
+app.post('/mind785', async(req,res)=>{
 
   console.log(req.body,"request hello")
-    const {message,pq,pa}=req.body;
+    const {message,pq,pa,name,email,phone}=req.body;
     console.log("message inside api is",message)
     // res.json({message:message})
    let company="mind";
@@ -333,6 +380,26 @@ app.post('/fortale', async(req,res)=>{
   console.log(response,"is response")
 const context = await minddetails(message);
 console.log(context,"is context")
+
+  // store conversation in memory keyed by user info
+  try {
+    if (name && email && phone) {
+      const key = `${name}_${email}_${phone}`;
+      if (!sessionStore[key]) {
+        sessionStore[key] = { userInfo: { name, email, phone }, messages: [] };
+      }
+      // append current exchange
+      sessionStore[key].messages.push({ user: message, ai: response });
+      console.log('Updated sessionStore for', key, sessionStore[key]);
+      // schedule email if this is first message
+      scheduleEmailForSession(key);
+    } else {
+      console.log('Missing name/email/phone; skipping session storage');
+    }
+  } catch (err) {
+    console.error('Error storing session message:', err);
+  }
+
   if(response){
       res.json({message:response,parameters:context})
 }
