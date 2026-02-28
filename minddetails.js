@@ -60,7 +60,7 @@ const printdetails=({is_human,is_booking,is_offer,is_intro})=>{
                 is_human:{
                   "type": "boolean",
                     "enum": [true, false],
-                    "description": "indicates whether the user is asking specifically to talk to a human. Meaning instead of ai chat user wants to talk to an actual human. This is false if user is asking to book a room"
+                    "description": "indicates whether the user is asking specifically to talk to a human. Meaning instead of ai chat user wants to talk to an actual human. This is false if user is asking to book a room or general enquiries like how are you etc. User must specifically express intent to talk to a human or ask for whatsapp number etc"
                 },
                   is_booking: {
                     "type": "boolean",
