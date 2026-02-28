@@ -378,7 +378,7 @@ app.post('/mind785', async(req,res)=>{
    const response=await customGenerateCompletionwithContext(message,company,pq,pa);
 
   console.log(response,"is response")
-const context = await minddetails(message);
+const context = await minddetails(pa,message);
 console.log(context,"is context")
 
   // store conversation in memory keyed by user info

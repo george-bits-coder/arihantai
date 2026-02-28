@@ -33,8 +33,9 @@ const OPENAI_API_KEY = process.env.apikey5; // Replace with your actual key
 // }
 // main();
 
-async function minddetails(discussion) {
+async function minddetails(ai_response,human_message) {
 
+  const discussion="AI: "+ ai_response+"Human: "+human_message;
 const printdetails=({is_human,is_booking,is_offer,is_intro})=>{
  
   console.log(is_human);
