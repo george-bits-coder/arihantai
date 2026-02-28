@@ -4,13 +4,15 @@ const cors = require('cors');
 const nodemailer = require('nodemailer');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const Airtable = require('airtable');
 app.use(cors()); // Add this line
 const {arihantdetails}=require("./arihant.js")
 const {enneagramdetails}=require("./enneagram.js")
 const {fortaledetails}=require("./fortale.js")
 const {minddetails}=require("./minddetails.js")
 const { openai } = require("./utils/helper");
-
+const base = new Airtable({ apiKey: process.env.airtabletoken }).base(process.env.BASE); 
+const TABLE_NAME = 'Table 1';
 // Parse JSON bodies (needed for POST requests)
 app.use(express.json()); 
 app.get('/hi', (req, res) => {
@@ -368,7 +370,85 @@ function scheduleEmailForSession(key) {
   }, 5 * 60 * 1000); // 5 minutes
 }
 
-app.post('/mind785', async(req,res)=>{
+app.post('/mind785', async (req, res) => {
+  console.log(req.body, "request hello");
+  
+  const { message, pq, pa, name, email, phone } = req.body;
+  console.log("message inside api is", message);
+
+  let company = "mind";
+  const response = await customGenerateCompletionwithContext(message, company, pq, pa);
+  console.log(response, "is response");
+
+  const context = await minddetails(pa,message);
+  console.log(context, "is context");
+
+  // Store conversation in Airtable
+  try {
+    if (name && email && phone) {
+      await storeMessageInAirtable(name, email, phone, message, response);
+    } else {
+      console.log('Missing name/email/phone; skipping Airtable storage');
+    }
+  } catch (err) {
+    console.error('Error storing message in Airtable:', err);
+  }
+
+  if (response) {
+    res.json({ message: response, parameters: context });
+  }
+});
+
+async function storeMessageInAirtable(name, email, phone, userMessage, aiResponse) {
+  // Format the new message entry with timestamp
+  const timestamp = new Date().toISOString();
+  const newMessageEntry = `[${timestamp}]\nUser: ${userMessage}\nAI: ${aiResponse}\n---\n`;
+
+  // Search for existing record with same name, email, and phone
+  const filterFormula = `AND({Name} = '${escapeAirtableString(name)}', {email} = '${escapeAirtableString(email)}', {phone number} = '${escapeAirtableString(phone)}')`;
+
+  const existingRecords = await base(TABLE_NAME)
+    .select({
+      filterByFormula: filterFormula,
+      maxRecords: 1
+    })
+    .firstPage();
+
+  if (existingRecords.length > 0) {
+    // Record exists - append to existing messages
+    const record = existingRecords[0];
+    const existingMessages = record.get('messages') || '';
+    const updatedMessages = existingMessages + newMessageEntry;
+
+    await base(TABLE_NAME).update(record.id, {
+      'messages': updatedMessages
+    });
+
+    console.log(`Appended message to existing record: ${record.id}`);
+  } else {
+    // No existing record - create new one
+    const newRecord = await base(TABLE_NAME).create({
+      'Name': name,
+      'email': email,
+      'phone number': phone,
+      'messages': newMessageEntry
+    });
+
+    console.log(`Created new record: ${newRecord.id}`);
+  }
+}
+
+// Helper function to escape single quotes in Airtable formula strings
+function escapeAirtableString(str) {
+  if (!str) return '';
+  return str.replace(/'/g, "\\'");
+}
+
+
+
+
+
+app.post('/mind787', async(req,res)=>{
 
   console.log(req.body,"request hello")
     const {message,pq,pa,name,email,phone}=req.body;
