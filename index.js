@@ -395,7 +395,13 @@ app.post('/mind785', async (req, res) => {
   }
 
   if (response) {
-    res.json({ message: response, parameters: context });
+    if(Object.keys(context).length==1)
+    res.json({ message: response, parameters: {...context, is_intro:false,is_offer:false,is_human:false}});
+     else if(Object.keys(context).length==3)
+    res.json({ message: response, parameters: {...context, is_booking:false}});
+     else
+    res.json({ message: response, parameters: context});
+
   }
 });
 

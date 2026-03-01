@@ -36,19 +36,27 @@ const OPENAI_API_KEY = process.env.apikey5; // Replace with your actual key
 async function minddetails(ai_response,human_message) {
 
   const discussion="AI: "+ ai_response+"Human: "+human_message;
-const printdetails=({is_human,is_booking,is_offer,is_intro})=>{
+const printdetails=({is_human,is_offer,is_intro})=>{
  
-  console.log(is_human);
+  
+  
+  return {is_human,is_offer,is_intro}
+  }
+
+
+  const printdetails1=({is_booking})=>{
+ 
+  
   console.log(is_booking);
   
-  return {is_human,is_booking,is_offer,is_intro}
+  return {is_booking}
   }
   try {
       const response = await openai.createChatCompletion({
           model: "gpt-4o-mini",
           messages: [
               { role: "system", content: "You are an assistant that extracts specifics from discussions." },
-              { role: "user", content: `Extract the specifics from the following discussion.: ${discussion}` },
+              { role: "user", content: `Extract the specifics from the following discussion.: ${human_message}` },
           ],
           functions:[
             {
@@ -62,11 +70,7 @@ const printdetails=({is_human,is_booking,is_offer,is_intro})=>{
                     "enum": [true, false],
                     "description": "indicates whether the user is asking specifically to talk to a human. Meaning instead of ai chat user wants to talk to an actual human. This is false if user is asking to book a room or general enquiries like how are you etc. User must specifically express intent to talk to a human or ask for whatsapp number etc"
                 },
-                  is_booking: {
-                    "type": "boolean",
-                    "enum": [true, false],
-                    "description": "indicates whether the user is asking specifically to get an idea/ overview or intro about mindora "
-                  },
+                 
                  is_offer: {
                     "type": "boolean",
                     "enum": [true, false],
@@ -82,7 +86,7 @@ const printdetails=({is_human,is_booking,is_offer,is_intro})=>{
                 
                 },
                 
-              required:["is_human","is_booking","is_offer","is_intro"]
+              required:["is_human","is_offer","is_intro"]
              
             }
                
@@ -93,13 +97,54 @@ const printdetails=({is_human,is_booking,is_offer,is_intro})=>{
 
       const reply = response.data.choices[0].message;
 console.log(reply)
+ const response1 = await openai.createChatCompletion({
+          model: "gpt-4o-mini",
+          messages: [
+              { role: "system", content: "You are an assistant that extracts specifics from discussions." },
+              { role: "user", content: `Extract the specifics from the following discussion.: ${discussion}` },
+          ],
+          functions:[
+            {
+            name: 'printdetails',
+            description: 'prints the specifics from discussion',
+            parameters:{
+              type:"object",
+              properties:{
+               
+                  is_booking: {
+                    "type": "boolean",
+                    "enum": [true, false],
+                    "description": "indicates whether the user is asking specifically to get an idea/ overview or intro about mindora "
+                  },
 
+
+                
+                },
+                
+              required:["is_booking"]
+             
+            }
+               
+          }],
+          function_call:{ name: 'printdetails'},
+          temperature: 0.2,
+      });
+
+      const reply1 = response1.data.choices[0].message;
      if(reply.content==null)
      {
         if(reply.function_call.name=="printdetails")
         {
           var ans=printdetails(JSON.parse(reply.function_call.arguments));
           return ans;
+        }
+     }
+     else if(reply1.content==null)
+     {
+          if(reply1.function_call.name=="printdetails1")
+        {
+          var ans1=printdetails1(JSON.parse(reply.function_call.arguments));
+          return ans1;
         }
      }
      else return {is_human:false,is_booking:false,is_offer:false,is_intro:false};
