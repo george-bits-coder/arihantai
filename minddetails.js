@@ -126,7 +126,7 @@ console.log(reply)
             }
                
           }],
-          function_call:{ name: 'printdetails'},
+          function_call:{ name: 'printdetails1'},
           temperature: 0.2,
       });
 
