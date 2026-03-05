@@ -395,6 +395,7 @@ app.post('/mind785', async (req, res) => {
   }
 
   if (response) {
+    console.log("Final response and context ready to send",context);
     if(Object.keys(context).length==1)
     res.json({ message: response, parameters: {...context, is_intro:false,is_offer:false,is_human:false}});
      else if(Object.keys(context).length==3)
