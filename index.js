@@ -492,22 +492,22 @@ console.log(context,"is context")
 }
 })
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail', // or your email service
-  auth: {
-    user: process.env.EMAIL_USER || 'consultmindora@gmail.com',
-    pass: process.env.EMAIL_PASS || 'dtjb lnzg bfex fwcp'
-  }
-});
+// const transporter = nodemailer.createTransport({
+//   service: 'gmail', // or your email service
+//   auth: {
+//     user: process.env.EMAIL_USER || 'consultmindora@gmail.com',
+//     pass: process.env.EMAIL_PASS || 'dtjb lnzg bfex fwcp'
+//   }
+// });
 
 // Verify transporter
-transporter.verify((error, success) => {
-  if (error) {
-    console.log('Transporter verification failed:', error);
-  } else {
-    console.log('Transporter is ready to send emails');
-  }
-});
+// transporter.verify((error, success) => {
+//   if (error) {
+//     console.log('Transporter verification failed:', error);
+//   } else {
+//     console.log('Transporter is ready to send emails');
+//   }
+// });
 
 // Endpoint to send session email
 app.post('/send-session-email', async (req, res) => {
@@ -545,7 +545,7 @@ app.post('/send-session-email', async (req, res) => {
 
     console.log('Sending email...');
     // Send email
-    await transporter.sendMail(mailOptions);
+    // await transporter.sendMail(mailOptions);
     console.log('Email sent successfully');
 
     res.status(200).json({ success: true, message: 'Session email sent successfully' });
