@@ -105,7 +105,7 @@ console.log(reply)
           ],
           functions:[
             {
-            name: 'printdetails',
+            name: 'printdetails1',
             description: 'prints the specifics from discussion',
             parameters:{
               type:"object",
