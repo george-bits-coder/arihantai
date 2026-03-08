@@ -131,7 +131,14 @@ console.log(reply)
       });
 
       const reply1 = response1.data.choices[0].message;
-     if(reply.content==null)
+      console.log(reply1, "is reply1")
+
+                var ans2=printdetails1(JSON.parse(reply1.function_call.arguments));
+                if(ans2.is_booking==true)
+               {
+                      return ans2
+               }
+          else if(reply.content==null)
      {
         if(reply.function_call.name=="printdetails")
         {
