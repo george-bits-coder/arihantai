@@ -492,6 +492,48 @@ console.log(context,"is context")
 }
 })
 
+
+
+app.post('/kishore787', async(req,res)=>{
+
+  console.log(req.body,"request hello")
+    const {message,pq,pa,name,email,phone}=req.body;
+    console.log("message inside api is",message)
+    // res.json({message:message})
+   let company="kishore";
+   const response=await customGenerateCompletionwithContext(message,company,pq,pa);
+
+  console.log(response,"is response")
+// const context = await minddetails(pa,message);
+// console.log(context,"is context")
+
+  // store conversation in memory keyed by user info
+  try {
+    if (name && email && phone) {
+      const key = `${name}_${email}_${phone}`;
+      if (!sessionStore[key]) {
+        sessionStore[key] = { userInfo: { name, email, phone }, messages: [] };
+      }
+      // append current exchange
+      sessionStore[key].messages.push({ user: message, ai: response });
+      console.log('Updated sessionStore for', key, sessionStore[key]);
+      // schedule email if this is first message
+      // scheduleEmailForSession(key);
+    } else {
+      console.log('Missing name/email/phone; skipping session storage');
+    }
+  } catch (err) {
+    console.error('Error storing session message:', err);
+  }
+
+  if(response){
+      res.json({message:response})
+}
+})
+
+
+
+
 // const transporter = nodemailer.createTransport({
 //   service: 'gmail', // or your email service
 //   auth: {
